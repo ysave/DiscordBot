@@ -16,8 +16,7 @@ module.exports = {
             else {
                 const e = new MessageEmbed()
                     .setColor('RANDOM')
-                    .setAuthor({ name: interaction.guild.me.displayName, iconURL: interaction.client.user.avatarURL() })
-                    .addField("Joke", `"${body.joke}"`, true);
+                    .addField("Joke", `${body.joke}`, true);
                 return interaction.reply({ embeds: [e] });
             }
         });
