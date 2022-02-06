@@ -1,4 +1,4 @@
-const { Client, Collection, Intents } = require('discord.js');
+const { Client, Collection, Intents, MessageActionRow} = require('discord.js');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 
@@ -18,9 +18,10 @@ for (const file of commandFiles) {
     client.commands.set(command.data.name, command);
 }
 
-client.once('ready', () => {
-    console.log("Its killin' time.");
+client.once('ready', async() => {
+    console.log("Bot is on!!!");
     client.user.setActivity('Fortnite', { type: 'COMPETING' });
+    client.user.setUsername("Tommy Shelby");
 });
 
 const rest = new REST({ version: '9' }).setToken(token);
@@ -30,13 +31,33 @@ const rest = new REST({ version: '9' }).setToken(token);
             Routes.applicationGuildCommands(clientId, guildId),
             { body: commands },
         );
-        console.log('Successfully reloaded application (/) commands.');
+        console.log('Reloaded commands');
     } catch (error) {
         console.error(error);
     }
 })();
 
 client.on('interactionCreate', async interaction => {
+    if(interaction.isButton()){
+        if(interaction.customId === "true"){
+            interaction.component.setStyle('SUCCESS')
+            interaction.component.setDisabled(true)
+            await interaction.update({
+                components: [
+                    new MessageActionRow().addComponents(interaction.component)
+                ]
+            });
+        } else {
+            interaction.component.setStyle('DANGER')
+            interaction.component.setDisabled(true)
+            await interaction.update({
+                components: [
+                    new MessageActionRow().addComponents(interaction.component)
+                ]
+            });
+        }
+
+    }
     if (!interaction.isCommand()) return;
 
     const command = client.commands.get(interaction.commandName);
@@ -47,7 +68,7 @@ client.on('interactionCreate', async interaction => {
         await command.execute(interaction);
     } catch (error) {
         console.error(error);
-        await interaction.reply({ content: 'Bot is on!', ephemeral: true });
+        await interaction.reply({ content: 'Error', ephemeral: true });
     }
 });
 
